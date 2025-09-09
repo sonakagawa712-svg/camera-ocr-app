@@ -1,220 +1,200 @@
-{\rtf1\ansi\ansicpg932\cocoartf2822
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カメラOCRアプリ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5.0.0/dist/tesseract.min.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
 
-\f0\fs24 \cf0 <!DOCTYPE html>\
-<html lang="ja">\
-<head>\
-    <meta charset="UTF-8">\
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">\
-    <title>\uc0\u12459 \u12513 \u12521 OCR\u12450 \u12503 \u12522 </title>\
-    <script src="https://cdn.tailwindcss.com"></script>\
-    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5.0.0/dist/tesseract.min.js'></script>\
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">\
-    <style>\
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');\
-        body \{\
-            font-family: 'Inter', sans-serif;\
-            background-color: #f3f4f6;\
-            color: #1f2937;\
-        \}\
-    </style>\
-</head>\
-<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">\
-\
-    <div class="w-full max-w-xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">\
-        <h1 class="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-800">\uc0\u12459 \u12513 \u12521 OCR\u12450 \u12503 \u12522 </h1>\
-        <p class="text-center text-sm md:text-base text-gray-600 mb-8">\uc0\u12459 \u12513 \u12521 \u12391 \u25991 \u23383 \u12434 \u35501 \u12415 \u21462 \u12387 \u12390 \u12289 \u12486 \u12461 \u12473 \u12488 \u12395 \u22793 \u25563 \u12375 \u12414 \u12377 \u12290 </p>\
-\
-        <!-- \uc0\u12499 \u12487 \u12458 \u35201 \u32032 \u12392 \u12461 \u12515 \u12531 \u12496 \u12473  -->\
-        <div class="relative w-full aspect-video bg-gray-200 rounded-lg overflow-hidden mb-6">\
-            <video id="video" class="w-full h-full object-cover" playsinline></video>\
-            <canvas id="canvas" class="hidden"></canvas>\
-            <!-- \uc0\u12499 \u12487 \u12458 \u12364 \u35501 \u12415 \u36796 \u12414 \u12428 \u12390 \u12356 \u12394 \u12356 \u22580 \u21512 \u12398 \u12503 \u12524 \u12540 \u12473 \u12507 \u12523 \u12480 \u12540  -->\
-            <div id="video-placeholder" class="absolute inset-0 flex items-center justify-center bg-gray-200 text-gray-500">\
-                <i class="fas fa-video text-5xl"></i>\
-            </div>\
-        </div>\
-\
-        <!-- \uc0\u35501 \u12415 \u36796 \u12415 \u20013 \u34920 \u31034  -->\
-        <div id="loading" class="hidden text-center text-blue-500 mb-4">\
-            <i class="fas fa-spinner animate-spin mr-2"></i>\
-            <span>\uc0\u35501 \u12415 \u36796 \u12415 \u20013 ...</span>\
-        </div>\
-\
-        <!-- \uc0\u12508 \u12479 \u12531 \u12467 \u12531 \u12486 \u12490  -->\
-        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mb-6">\
-            <button id="capture-button" class="w-full md:w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300">\
-                <i class="fas fa-camera mr-2"></i>\
-                \uc0\u25774 \u24433 \u12375 \u12390 \u25991 \u23383 \u12434 \u35469 \u35672 \
-            </button>\
-            <button id="copy-button" class="w-full md:w-1/2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300">\
-                <i class="fas fa-copy mr-2"></i>\
-                \uc0\u12486 \u12461 \u12473 \u12488 \u12434 \u12467 \u12500 \u12540 \
-            </button>\
-        </div>\
-\
-        <!-- \uc0\u32080 \u26524 \u34920 \u31034 \u12456 \u12522 \u12450  -->\
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">\
-            <p class="text-gray-700 font-semibold mb-2">\uc0\u35469 \u35672 \u32080 \u26524 :</p>\
-            <div id="result-text" class="bg-white p-3 rounded-md border border-gray-300 h-40 overflow-auto whitespace-pre-wrap text-gray-800">\
-                \uc0\u12371 \u12371 \u12395 \u35501 \u12415 \u21462 \u12387 \u12383 \u12486 \u12461 \u12473 \u12488 \u12364 \u34920 \u31034 \u12373 \u12428 \u12414 \u12377 \u12290 \
-            </div>\
-        </div>\
-\
-        <!-- \uc0\u12513 \u12483 \u12475 \u12540 \u12472 \u12508 \u12483 \u12463 \u12473  -->\
-        <div id="message-box" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 hidden bg-gray-800 text-white text-center py-2 px-4 rounded-full shadow-lg">\
-            \uc0\u12486 \u12461 \u12473 \u12488 \u12364 \u12467 \u12500 \u12540 \u12373 \u12428 \u12414 \u12375 \u12383 \u65281 \
-        </div>\
-\
-    </div>\
-\
-    <script>\
-        const video = document.getElementById('video');\
-        const canvas = document.getElementById('canvas');\
-        const captureButton = document.getElementById('capture-button');\
-        const copyButton = document.getElementById('copy-button');\
-        const resultText = document.getElementById('result-text');\
-        const loading = document.getElementById('loading');\
-        const videoPlaceholder = document.getElementById('video-placeholder');\
-        const messageBox = document.getElementById('message-box');\
-        \
-        let stream = null;\
-\
-        // \uc0\u12459 \u12513 \u12521 \u12434 \u36215 \u21205 \
-        async function startCamera() \{\
-            try \{\
-                // \uc0\u12473 \u12510 \u12507 \u12398 \u32972 \u38754 \u12459 \u12513 \u12521 \u12434 \u20778 \u20808 \u12375 \u12390 \u36215 \u21205 \
-                const constraints = \{\
-                    video: \{\
-                        facingMode: \{\
-                            ideal: 'environment'\
-                        \}\
-                    \}\
-                \};\
-                stream = await navigator.mediaDevices.getUserMedia(constraints);\
-                video.srcObject = stream;\
-                video.onloadedmetadata = () => \{\
-                    video.play();\
-                    videoPlaceholder.classList.add('hidden');\
-                \};\
-            \} catch (err) \{\
-                console.error("\uc0\u12459 \u12513 \u12521 \u12398 \u36215 \u21205 \u12395 \u22833 \u25943 \u12375 \u12414 \u12375 \u12383 : ", err);\
-                resultText.textContent = "\uc0\u12459 \u12513 \u12521 \u12398 \u36215 \u21205 \u12395 \u22833 \u25943 \u12375 \u12414 \u12375 \u12383 \u12290 \u12502 \u12521 \u12454 \u12470 \u12391 \u12459 \u12513 \u12521 \u12408 \u12398 \u12450 \u12463 \u12475 \u12473 \u12434 \u35377 \u21487 \u12375 \u12390 \u12367 \u12384 \u12373 \u12356 \u12290 ";\
-            \}\
-        \}\
-        \
-        let cameraStarted = false;\
-\
-        // \uc0\u12459 \u12513 \u12521 \u12398 \u26144 \u20687 \u12363 \u12425 \u30011 \u20687 \u12434 \u12461 \u12515 \u12503 \u12481 \u12515 \u12375 \u12289 OCR\u12434 \u23455 \u34892 \
-        captureButton.addEventListener('click', async () => \{\
-            if (!cameraStarted) \{\
-                await startCamera();\
-                cameraStarted = true;\
-                // \uc0\u12459 \u12513 \u12521 \u36215 \u21205 \u24460 \u12289 \u12377 \u12368 \u12395 \u20966 \u29702 \u12434 \u38283 \u22987 \
-                setTimeout(() => \{\
-                    captureAndRecognize();\
-                \}, 500); // \uc0\u12459 \u12513 \u12521 \u12364 \u23433 \u23450 \u12377 \u12427 \u12414 \u12391 \u23569 \u12375 \u24453 \u12388 \
-                return;\
-            \}\
-            \
-            captureAndRecognize();\
-        \});\
-        \
-        async function captureAndRecognize() \{\
-            if (!stream) \{\
-                resultText.textContent = "\uc0\u12459 \u12513 \u12521 \u12364 \u36215 \u21205 \u12375 \u12390 \u12356 \u12414 \u12379 \u12435 \u12290 ";\
-                return;\
-            \}\
-            \
-            loading.classList.remove('hidden');\
-            resultText.textContent = '';\
-\
-            const context = canvas.getContext('2d');\
-            const videoWidth = video.videoWidth;\
-            const videoHeight = video.videoHeight;\
-            canvas.width = videoWidth;\
-            canvas.height = videoHeight;\
-            context.drawImage(video, 0, 0, videoWidth, videoHeight);\
-\
-            try \{\
-                // Tesseract.js\uc0\u12434 \u20351 \u29992 \u12375 \u12390 OCR\u12434 \u23455 \u34892 \
-                const \{ data: \{ text \} \} = await Tesseract.recognize(\
-                    canvas,\
-                    'jpn+eng', // \uc0\u26085 \u26412 \u35486 \u12392 \u33521 \u35486 \u12398 \u25991 \u23383 \u12434 \u35469 \u35672 \
-                    \{ logger: m => console.log(m) \}\
-                );\
-\
-                // \uc0\u24517 \u35201 \u12394 \u24773 \u22577 \u12398 \u12415 \u12434 \u25277 \u20986 \
-                const extractedText = extractSpecificInfo(text);\
-                resultText.textContent = extractedText;\
-\
-            \} catch (err) \{\
-                console.error("OCR\uc0\u12456 \u12521 \u12540 : ", err);\
-                resultText.textContent = "OCR\uc0\u20966 \u29702 \u20013 \u12395 \u12456 \u12521 \u12540 \u12364 \u30330 \u29983 \u12375 \u12414 \u12375 \u12383 \u12290 ";\
-            \} finally \{\
-                loading.classList.add('hidden');\
-            \}\
-        \}\
-\
-        // \uc0\u12486 \u12461 \u12473 \u12488 \u12434 \u12463 \u12522 \u12483 \u12503 \u12508 \u12540 \u12489 \u12395 \u12467 \u12500 \u12540 \
-        copyButton.addEventListener('click', () => \{\
-            const textToCopy = resultText.textContent;\
-            if (textToCopy === '' || textToCopy === '\uc0\u12371 \u12371 \u12395 \u35501 \u12415 \u21462 \u12387 \u12383 \u12486 \u12461 \u12473 \u12488 \u12364 \u34920 \u31034 \u12373 \u12428 \u12414 \u12377 \u12290 ' || textToCopy.includes('\u12456 \u12521 \u12540 ')) \{\
-                return;\
-            \}\
-            // `navigator.clipboard.writeText` \uc0\u12399 iframe\u20869 \u12391 \u21205 \u20316 \u12375 \u12394 \u12356 \u22580 \u21512 \u12364 \u12354 \u12427 \u12383 \u12417 \u12289 `execCommand` \u12434 \u20351 \u29992 \
-            const tempInput = document.createElement('textarea');\
-            tempInput.value = textToCopy;\
-            document.body.appendChild(tempInput);\
-            tempInput.select();\
-            document.execCommand('copy');\
-            document.body.removeChild(tempInput);\
-\
-            messageBox.classList.remove('hidden');\
-            setTimeout(() => \{\
-                messageBox.classList.add('hidden');\
-            \}, 2000);\
-        \});\
-\
-        // \uc0\u25277 \u20986 \u38306 \u25968 \
-        function extractSpecificInfo(text) \{\
-            const lines = text.split('\\n');\
-            let result = '';\
-            \
-            // MTM\uc0\u12398 \u34892 \u12434 \u25277 \u20986 \
-            const mtmLine = lines.find(line => line.includes('MTM:'));\
-            if (mtmLine) \{\
-                const mtmMatch = mtmLine.match(/MTM:\\s*(.*)/);\
-                if (mtmMatch && mtmMatch[1]) \{\
-                    result += `MTM: $\{mtmMatch[1].trim()\}\\n`;\
-                \}\
-            \}\
-\
-            // SN\uc0\u12398 \u34892 \u12434 \u25277 \u20986 \
-            const snLine = lines.find(line => line.includes('SN:'));\
-            if (snLine) \{\
-                const snMatch = snLine.match(/\\(S\\)SN:\\s*(.*)/);\
-                if (snMatch && snMatch[1]) \{\
-                    result += `(S)SN: $\{snMatch[1].trim()\}\\n`;\
-                \}\
-            \}\
-            \
-            // JAN code\uc0\u12398 \u34892 \u12434 \u25277 \u20986 \
-            const janCodeLine = lines.find(line => line.includes('JAN code:'));\
-            if (janCodeLine) \{\
-                 const janCodeMatch = janCodeLine.match(/JAN\\s*code:\\s*(.*)/);\
-                if (janCodeMatch && janCodeMatch[1]) \{\
-                    result += `JAN code: $\{janCodeMatch[1].trim()\}\\n`;\
-                \}\
-            \}\
-            \
-            return result.trim() || '\uc0\u35469 \u35672 \u32080 \u26524 \u12364 \u35211 \u12388 \u12363 \u12426 \u12414 \u12379 \u12435 \u12391 \u12375 \u12383 \u12290 ';\
-        \}\
-    </script>\
-</body>\
-</html>\
-}
+    <div class="w-full max-w-xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-center mb-6 text-gray-800">カメラOCRアプリ</h1>
+        <p class="text-center text-sm md:text-base text-gray-600 mb-8">カメラでMTMとSNを読み取ります。</p>
+
+        <!-- ビデオ要素とキャンバス -->
+        <div class="relative w-full aspect-video bg-gray-200 rounded-lg overflow-hidden mb-6">
+            <video id="video" class="w-full h-full object-cover" playsinline></video>
+            <canvas id="canvas" class="hidden"></canvas>
+            <!-- ビデオが読み込まれていない場合のプレースホルダー -->
+            <div id="video-placeholder" class="absolute inset-0 flex items-center justify-center bg-gray-200 text-gray-500">
+                <i class="fas fa-video text-5xl"></i>
+            </div>
+        </div>
+
+        <!-- 読み込み中表示 -->
+        <div id="loading" class="hidden text-center text-blue-500 mb-4">
+            <i class="fas fa-spinner animate-spin mr-2"></i>
+            <span>読み込み中...</span>
+        </div>
+
+        <!-- ボタンコンテナ -->
+        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mb-6">
+            <button id="capture-button" class="w-full md:w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300">
+                <i class="fas fa-camera mr-2"></i>
+                撮影して文字を認識
+            </button>
+        </div>
+
+        <!-- 結果表示エリア -->
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4">
+            <!-- MTM -->
+            <div class="flex-1 min-w-0 bg-white p-3 rounded-md border border-gray-300">
+                <p class="text-xs text-gray-500 font-semibold mb-1">MTM:</p>
+                <p id="mtm-text" class="text-gray-800 whitespace-pre-wrap break-words">認識結果がここに表示されます。</p>
+            </div>
+            
+            <!-- SN -->
+            <div class="flex-1 min-w-0 bg-white p-3 rounded-md border border-gray-300">
+                <p class="text-xs text-gray-500 font-semibold mb-1">SN:</p>
+                <p id="sn-text" class="text-gray-800 whitespace-pre-wrap break-words">認識結果がここに表示されます。</p>
+            </div>
+            
+            <a id="spreadsheet-link" href="https://docs.google.com/spreadsheets/d/1-jjetvbMxOftWSw4nyL3u_OfcUURlEISFcSX3sBjvG0/edit?gid=0#gid=0" target="_blank" class="w-full block text-center bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300">
+                <i class="fas fa-file-excel mr-2"></i>
+                スプレッドシートへ
+            </a>
+        </div>
+
+        <!-- メッセージボックス -->
+        <div id="message-box" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 hidden bg-gray-800 text-white text-center py-2 px-4 rounded-full shadow-lg">
+            テキストがコピーされました！
+        </div>
+
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture-button');
+        const mtmText = document.getElementById('mtm-text');
+        const snText = document.getElementById('sn-text');
+        const loading = document.getElementById('loading');
+        const videoPlaceholder = document.getElementById('video-placeholder');
+        const messageBox = document.getElementById('message-box');
+        
+        let stream = null;
+        let cameraStarted = false;
+
+        // カメラを起動
+        async function startCamera() {
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: {
+                            ideal: 'environment'
+                        }
+                    }
+                };
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    video.play();
+                    videoPlaceholder.classList.add('hidden');
+                };
+            } catch (err) {
+                console.error("カメラの起動に失敗しました: ", err);
+                mtmText.textContent = "カメラの起動に失敗しました。";
+                snText.textContent = "ブラウザでカメラへのアクセスを許可してください。";
+            }
+        }
+        
+        // カメラの映像から画像をキャプチャし、OCRを実行
+        captureButton.addEventListener('click', async () => {
+            if (!cameraStarted) {
+                await startCamera();
+                cameraStarted = true;
+                setTimeout(() => {
+                    captureAndRecognize();
+                }, 500);
+                return;
+            }
+            captureAndRecognize();
+        });
+        
+        async function captureAndRecognize() {
+            if (!stream) {
+                mtmText.textContent = "カメラが起動していません。";
+                snText.textContent = "";
+                return;
+            }
+            
+            loading.classList.remove('hidden');
+            mtmText.textContent = '';
+            snText.textContent = '';
+
+            const context = canvas.getContext('2d');
+            const videoWidth = video.videoWidth;
+            const videoHeight = video.videoHeight;
+            canvas.width = videoWidth;
+            canvas.height = videoHeight;
+            context.drawImage(video, 0, 0, videoWidth, videoHeight);
+
+            try {
+                const { data: { text } } = await Tesseract.recognize(
+                    canvas,
+                    'jpn+eng',
+                    { logger: m => console.log(m) }
+                );
+
+                const sanitizedText = sanitizeText(text);
+                const extractedInfo = extractSpecificInfo(sanitizedText);
+                mtmText.textContent = extractedInfo.mtm || '見つかりませんでした。';
+                snText.textContent = extractedInfo.sn || '見つかりませんでした。';
+
+            } catch (err) {
+                console.error("OCRエラー: ", err);
+                mtmText.textContent = "OCR処理中にエラーが発生しました。";
+                snText.textContent = "";
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+        
+        function sanitizeText(text) {
+            text = text.replace(/①/g, '1');
+            text = text.replace(/②/g, '2');
+            text = text.replace(/③/g, '3');
+            text = text.replace(/④/g, '4');
+            text = text.replace(/⑤/g, '5');
+            text = text.replace(/⑥/g, '6');
+            text = text.replace(/⑦/g, '7');
+            text = text.replace(/⑧/g, '8');
+            text = text.replace(/⑨/g, '9');
+            text = text.replace(/⑩/g, '10');
+            return text;
+        }
+
+        function extractSpecificInfo(text) {
+            const lines = text.split('\n');
+            let mtm = '';
+            let sn = '';
+            
+            const mtmRegex = /MTM\s*[:]?\s*(.*)/i;
+            const snRegex = /\(S\)?\s*SN\s*[:]?\s*(.*)/i;
+
+            lines.forEach(line => {
+                const mtmMatch = line.match(mtmRegex);
+                if (mtmMatch && mtmMatch[1] && !mtm) {
+                    mtm = mtmMatch[1].trim();
+                }
+                const snMatch = line.match(snRegex);
+                if (snMatch && snMatch[1] && !sn) {
+                    sn = snMatch[1].trim();
+                }
+            });
+            return { mtm, sn };
+        }
+    </script>
+</body>
+</html>
